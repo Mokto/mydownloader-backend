@@ -1,0 +1,23 @@
+# Routes Config
+#
+# This file defines all application routes (Higher priority routes first)
+#
+
+# module:testrunner
+# module:jobs
+
+
+GET     /                                       404
+GET     /favicon.ico                            404
+POST    /torrents                               Torrents.Post
+
+GET     /providers/status                       Providers.Status
+
+OPTIONS /alldebrid/login                        Options.Get
+POST    /alldebrid/login                        Alldebrid.Login
+OPTIONS /alldebrid/logout                        Options.Get
+POST    /alldebrid/logout                        Alldebrid.Logout
+
+
+OPTIONS /download                               Options.Get
+POST    /download                                   Download.Download
