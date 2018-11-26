@@ -1,7 +1,14 @@
 package app
 
 import (
+	// "time"
 	"github.com/revel/revel"
+	"net/http"
+	"golang.org/x/net/websocket"
+	"fmt"
+	"localserver/app/services/websockets"
+	"localserver/app/utils/links"
+	"math/rand"
 )
 
 var (
@@ -35,7 +42,7 @@ func init() {
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
-	// revel.OnAppStart(FillCache)
+	revel.OnAppStart(StartWebsockets)
 }
 
 // HeaderFilter adds common security headers
@@ -62,3 +69,29 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //		// Dev mode
 //	}
 //}
+
+func StartWebsockets() {
+	http.Handle("/", websocket.Handler(func (ws *websocket.Conn) {
+		defer ws.Close()
+		fmt.Println("Client Connected")
+
+		connId := rand.Intn(9999999999999999)
+	
+		websockets.AddConnection(ws, connId)
+		go links.ListAndSend()
+	
+	
+		for {
+			var message string
+			err := websocket.Message.Receive(ws, &message)
+			if err != nil {
+				websockets.RemoveConnection(connId)
+				break
+			}
+		}
+	}))
+
+	fmt.Println("Websocket server is listening to : 9001")
+	go http.ListenAndServe(":9001", nil)
+}
+

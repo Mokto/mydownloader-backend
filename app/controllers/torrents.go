@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/revel/revel"
+	"localserver/app/services/websockets"
 )
 
 // Torrents Controller
@@ -22,6 +23,11 @@ func (c Torrents) Post() revel.Result {
 	// }
 
 	// fmt.Printf("%s", body)
+
+
+	go func() {
+		websockets.SendMessage("test", "dsadasd")
+	}()
 
 	return c.RenderJSON(nil)
 }

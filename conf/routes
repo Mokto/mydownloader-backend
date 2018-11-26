@@ -6,6 +6,7 @@
 # module:testrunner
 # module:jobs
 
+WS      /ws                                     Websocket.Join       
 
 GET     /                                       404
 GET     /favicon.ico                            404
