@@ -15,6 +15,7 @@ type Link struct {
 	Type				string `json:"type"`
 	Season				string `json:"season"`
 	Episode				string `json:"episode"`
+	Links				[]string `json:"links"`
 }
 
 const (
@@ -24,7 +25,8 @@ const (
 	TORRENT_DONE int = 3
 
 	DOWNLOAD_NOT_READY int = 0
-	DOWNLOAD_QUEUING int = 1
+	DOWNLOAD_DEBRIDING int = 1
 	DOWNLOAD_DOWNLOADING int = 2
-	DOWNLOAD_DONE int = 3
+	DOWNLOAD_DECOMPRESSING int = 3
+	DOWNLOAD_DONE int = 4
 )

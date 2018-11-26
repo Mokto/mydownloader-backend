@@ -60,3 +60,14 @@ func (c Download) Download() revel.Result {
 	
 	return c.RenderJSON(nil)
 }
+
+// Login to Download Provider
+func (c Download) DeleteDownload(id string) revel.Result {
+
+	links.Remove(id)
+	// TODO SHOULD REMOVE ALLDEBRID TOO
+
+	go links.ListAndSend()
+	
+	return c.RenderJSON(nil)
+}

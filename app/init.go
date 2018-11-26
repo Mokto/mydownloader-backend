@@ -47,6 +47,7 @@ func init() {
 	// revel.OnAppStart(InitDB)
 	revel.OnAppStart(WatchAllDebrid)
 	revel.OnAppStart(StartWebsockets)
+	revel.OnAppStart(CheckLinksToDebrid)
 }
 
 // HeaderFilter adds common security headers
@@ -60,7 +61,7 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 
 	c.Response.Out.Header().Add("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
 	c.Response.Out.Header().Add("Access-Control-Allow-Origin", "*")
-	c.Response.Out.Header().Add("Access-Control-Allow-Method", "POST, GET, OPTIONS, PUT, DELETE")
+	c.Response.Out.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	c.Response.Out.Header().Add("Content-Type", "application/json; charset=UTF-8")
 
 	fc[0](c, fc[1:]) // Execute the next filter stage.
@@ -118,3 +119,38 @@ func WatchAllDebrid() {
 	}()
 }
 
+
+func CheckLinksToDebrid() {
+	go func() {
+		for {
+			linksToDebrid := links.GetAll()
+			for  i, link := range linksToDebrid {
+				if link.DownloadState == models.DOWNLOAD_NOT_READY && link.TorrentState == models.TORRENT_DONE {
+					linksToDebrid[i].DownloadState = models.DOWNLOAD_DEBRIDING
+					links.Save(linksToDebrid)
+					for  j, textLink := range link.Links {
+						fmt.Println(textLink)
+						var debridInstance debrid.Debrid
+						debridInstance = &debrid.AllDebrid{}
+						linkDownloadable := debridInstance.GetDownloadableLink(textLink)
+						
+						linksToDebrid[i].Links[j] = linkDownloadable
+					}
+					linksToDebrid[i].DownloadState = models.DOWNLOAD_DOWNLOADING
+				}
+			}
+			links.Save(linksToDebrid)
+			links.ListAndSend()
+			time.Sleep(10 * time.Second);
+		}
+	}()
+}
+
+
+	// for  i, link := range linksToCheck {
+	// 	if link.DownloadState == models.DOWNLOAD_NOT_DEBRIDED {
+	// 		for  j, textLink := range link.Links {
+
+	// 		}
+	// 	}
+	// }

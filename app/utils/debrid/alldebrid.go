@@ -117,6 +117,28 @@ func (d *AllDebrid) Logout() {
 	cache.Delete(allDebridTokenKey)
 }
 
+type allDebridGetDownloadableLinkInfoResponse struct {
+	Link string `json:"link"`
+}
+type allDebridGetDownloadableLinkResponse struct {
+	Success bool `json:"success"`
+	Infos allDebridGetDownloadableLinkInfoResponse `json:"infos"`
+}
+
+func (d *AllDebrid) GetDownloadableLink(link string) string {
+	var url strings.Builder
+	url.WriteString("https://api.alldebrid.com/link/unlock?agent=mySoft&token=")
+	url.WriteString(getToken())
+	url.WriteString("&link=")
+	url.WriteString(link)
+
+	httpResponse, _ := http.Get(url.String())
+	
+	allDebridGetDownloadableLinkResponseR := allDebridGetDownloadableLinkResponse{}
+	json.NewDecoder(httpResponse.Body).Decode(&allDebridGetDownloadableLinkResponseR)
+
+	return allDebridGetDownloadableLinkResponseR.Infos.Link
+}
 
 func (d *AllDebrid) AddTorrent(filename string, magnet string) (error, int) {
 
@@ -186,8 +208,10 @@ func (d *AllDebrid) UpdateStatuses(linksToCheck []models.Link) {
 						linksToCheck[i].Percentage = float32(torrent.Uploaded) * 100.0 / float32(torrent.Size)
 					case 4:
 						linksToCheck[i].TorrentState = models.TORRENT_DONE
+						// linksToCheck[i].DownloadState = models.DOWNLOAD_NOT_DEBRIDED
 						linksToCheck[i].Speed = 0
 						linksToCheck[i].Percentage = 100
+						linksToCheck[i].Links = torrent.Links
 				}
 			}
 		}
@@ -195,6 +219,7 @@ func (d *AllDebrid) UpdateStatuses(linksToCheck []models.Link) {
 
 	links.Save(linksToCheck)
 	links.Send(linksToCheck)
+
 }
 
 func getToken() string {
@@ -233,3 +258,5 @@ func getTorrents() []allDebridTorrent {
 
 	return allDebridTorrentsGetResponseR.Torrents
 }
+
+

@@ -4,9 +4,7 @@
 #
 
 # module:testrunner
-# module:jobs
-
-WS      /ws                                     Websocket.Join       
+# module:jobs 
 
 GET     /                                       404
 GET     /favicon.ico                            404
@@ -21,4 +19,6 @@ POST    /alldebrid/logout                        Alldebrid.Logout
 
 
 OPTIONS /download                               Options.Get
-POST    /download                                   Download.Download
+POST    /download                               Download.Download
+OPTIONS   /download/:id                         Options.Get
+DELETE    /download/:id                         Download.DeleteDownload

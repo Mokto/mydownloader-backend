@@ -9,4 +9,5 @@ type Debrid interface {
 	Logout()
 	AddTorrent(filename string, magnet string) (error, int)
 	UpdateStatuses(links []models.Link)
+	GetDownloadableLink(link string) string
 }
