@@ -1,4 +1,4 @@
-package links
+package downloads
 
 import (
 	"encoding/json"
@@ -13,21 +13,21 @@ func ListAndSend() {
 	if (cacheData == "") {
 		cacheData = "[]"
 	}
-	websockets.SendMessage("links", cacheData)
+	websockets.SendMessage("downloads", cacheData)
 }
 
-func Send(links []models.Link) {
-	cacheData, _ := json.Marshal(links)
-	websockets.SendMessage("links", string(cacheData))
+func Send(downloads []models.Download) {
+	cacheData, _ := json.Marshal(downloads)
+	websockets.SendMessage("downloads", string(cacheData))
 }
 
 
-func GetAll() (links []models.Link) {
-	links = []models.Link{}
+func GetAll() (downloads []models.Download) {
+	downloads = []models.Download{}
 
 	cacheData, _ := cache.Get(cacheKey).Result()
 	if (cacheData != "") {
-		json.Unmarshal([]byte(cacheData), &links) 
+		json.Unmarshal([]byte(cacheData), &downloads) 
 	}
 
 	return;

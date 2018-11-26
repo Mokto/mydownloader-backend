@@ -4,7 +4,7 @@ import (
 	"localserver/app/models"
 	"fmt"
 	"localserver/app/utils/debrid"
-	"localserver/app/utils/links"
+	"localserver/app/utils/downloads"
 
 	"github.com/revel/revel"
 	"github.com/satori/go.uuid"
@@ -39,7 +39,7 @@ func (c Download) Download() revel.Result {
 		return c.RenderText(err.Error())
 	}
 
-	link := models.Link{
+	download := models.Download{
 		ID:          		uuid.Must(uuid.NewV4()).String(),
 		AllDebridID:		allDebridID,
 		TorrentUrl:			url,
@@ -51,9 +51,9 @@ func (c Download) Download() revel.Result {
 		DownloadState: 		models.DOWNLOAD_NOT_READY,
 	}
 
-	links.Add(link)
+	downloads.Add(download)
 
-	go links.ListAndSend()
+	go downloads.ListAndSend()
 	
 	return c.RenderJSON(nil)
 }
@@ -61,10 +61,10 @@ func (c Download) Download() revel.Result {
 // Login to Download Provider
 func (c Download) DeleteDownload(id string) revel.Result {
 
-	links.Remove(id)
+	downloads.Remove(id)
 	// TODO SHOULD REMOVE ALLDEBRID TOO
 
-	go links.ListAndSend()
+	go downloads.ListAndSend()
 	
 	return c.RenderJSON(nil)
 }

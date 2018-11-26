@@ -1,6 +1,6 @@
 package models
 
-type Link struct {
+type Download struct {
 	ID     	    		string `json:"id"`
 
 	AllDebridID 		int `json:"allDebridId"`

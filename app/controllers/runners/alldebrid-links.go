@@ -1,9 +1,8 @@
 package runners
 
 import (
-	"fmt"
 	"localserver/app/models"
-	"localserver/app/utils/links"
+	"localserver/app/utils/downloads"
 	"localserver/app/utils/debrid"
 	"time"
 )
@@ -11,22 +10,21 @@ import (
 func CheckLinksToDebrid() {
 	go func() {
 		for {
-			linksToDebrid := links.GetAll()
-			for  i, link := range linksToDebrid {
-				if link.DownloadState == models.DOWNLOAD_NOT_READY && link.TorrentState == models.TORRENT_DONE {
-					linksToDebrid[i].DownloadState = models.DOWNLOAD_DEBRIDING
-					links.Save(linksToDebrid)
-					for  j, textLink := range link.Links {
-						fmt.Println(textLink)
-						linkDownloadable := debrid.GetDownloadableLink(textLink)
+			downloadsToCheck := downloads.GetAll()
+			for  i, download := range downloadsToCheck {
+				if download.DownloadState == models.DOWNLOAD_NOT_READY && download.TorrentState == models.TORRENT_DONE {
+					downloadsToCheck[i].DownloadState = models.DOWNLOAD_DEBRIDING
+					downloads.Save(downloadsToCheck)
+					for  j, textdownload := range download.Links {
+						downloadLink := debrid.GetDownloadableLink(textdownload)
 						
-						linksToDebrid[i].Links[j] = linkDownloadable
+						downloadsToCheck[i].Links[j] = downloadLink
 					}
-					linksToDebrid[i].DownloadState = models.DOWNLOAD_DOWNLOADING
+					downloadsToCheck[i].DownloadState = models.DOWNLOAD_DOWNLOADING
 				}
 			}
-			links.Save(linksToDebrid)
-			links.ListAndSend()
+			downloads.Save(downloadsToCheck)
+			downloads.ListAndSend()
 			time.Sleep(time.Second);
 		}
 	}()

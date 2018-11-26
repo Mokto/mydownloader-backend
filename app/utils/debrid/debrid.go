@@ -22,8 +22,8 @@ func IsLoggedIn() bool {
 	return alldebrid.IsLoggedIn()
 }
 
-func UpdateStatuses(links []models.Link) {
-	alldebrid.UpdateStatuses(links)
+func UpdateStatuses(downloads []models.Download) {
+	alldebrid.UpdateStatuses(downloads)
 }
 
 func GetDownloadableLink(link string) string {

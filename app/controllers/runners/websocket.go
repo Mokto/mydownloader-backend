@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/websocket"
 	"fmt"
 	"localserver/app/services/websockets"
-	"localserver/app/utils/links"
+	"localserver/app/utils/downloads"
 	"github.com/satori/go.uuid"
 )
 
@@ -18,7 +18,7 @@ func StartWebsockets() {
 		connId := uuid.Must(uuid.NewV4()).String()
 	
 		websockets.AddConnection(ws, connId)
-		go links.ListAndSend()
+		go downloads.ListAndSend()
 	
 	
 		for {
