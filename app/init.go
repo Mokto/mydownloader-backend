@@ -3,15 +3,7 @@ package app
 import (
 	// "time"
 	"github.com/revel/revel"
-	"net/http"
-	"golang.org/x/net/websocket"
-	"fmt"
-	"localserver/app/models"
-	"localserver/app/services/websockets"
-	"localserver/app/utils/links"
-	"localserver/app/utils/debrid"
-	"github.com/satori/go.uuid"
-	"time"
+	"localserver/app/controllers/runners"
 )
 
 var (
@@ -41,13 +33,10 @@ func init() {
 	}
 
 	// Register startup functions with OnAppStart
-	// revel.DevMode and revel.RunMode only work inside of OnAppStart. See Example Startup Script
-	// ( order dependent )
-	// revel.OnAppStart(ExampleStartupScript)
-	// revel.OnAppStart(InitDB)
-	revel.OnAppStart(WatchAllDebrid)
-	revel.OnAppStart(StartWebsockets)
-	revel.OnAppStart(CheckLinksToDebrid)
+	// revel.DevMode and revel.RunMode only work inside of OnAppStart.
+	revel.OnAppStart(runners.WatchAllDebrid)
+	revel.OnAppStart(runners.StartWebsockets)
+	revel.OnAppStart(runners.CheckLinksToDebrid)
 }
 
 // HeaderFilter adds common security headers
@@ -74,79 +63,3 @@ var HeaderFilter = func(c *revel.Controller, fc []revel.Filter) {
 //		// Dev mode
 //	}
 //}
-
-func StartWebsockets() {
-	http.Handle("/", websocket.Handler(func (ws *websocket.Conn) {
-		defer ws.Close()
-		fmt.Println("Client Connected")
-
-		connId := uuid.Must(uuid.NewV4()).String()
-	
-		websockets.AddConnection(ws, connId)
-		go links.ListAndSend()
-	
-	
-		for {
-			var message string
-			err := websocket.Message.Receive(ws, &message)
-			if err != nil {
-				websockets.RemoveConnection(connId)
-				break
-			}
-		}
-	}))
-
-	fmt.Println("Websocket server is listening to : 9001")
-	go http.ListenAndServe(":9001", nil)
-}
-
-
-func WatchAllDebrid() {
-	go func() {
-		for {
-			links := links.GetAll()
-			for _, link := range links {
-				if (link.AllDebridID != 0 && (link.TorrentState != models.TORRENT_DONE)) {
-					fmt.Println("Updating statuses")
-					debrid.UpdateStatuses(links)
-					break
-				}
-			}
-			time.Sleep(time.Second);
-		}
-	}()
-}
-
-
-func CheckLinksToDebrid() {
-	go func() {
-		for {
-			linksToDebrid := links.GetAll()
-			for  i, link := range linksToDebrid {
-				if link.DownloadState == models.DOWNLOAD_NOT_READY && link.TorrentState == models.TORRENT_DONE {
-					linksToDebrid[i].DownloadState = models.DOWNLOAD_DEBRIDING
-					links.Save(linksToDebrid)
-					for  j, textLink := range link.Links {
-						fmt.Println(textLink)
-						linkDownloadable := debrid.GetDownloadableLink(textLink)
-						
-						linksToDebrid[i].Links[j] = linkDownloadable
-					}
-					linksToDebrid[i].DownloadState = models.DOWNLOAD_DOWNLOADING
-				}
-			}
-			links.Save(linksToDebrid)
-			links.ListAndSend()
-			time.Sleep(time.Second);
-		}
-	}()
-}
-
-
-	// for  i, link := range linksToCheck {
-	// 	if link.DownloadState == models.DOWNLOAD_NOT_DEBRIDED {
-	// 		for  j, textLink := range link.Links {
-
-	// 		}
-	// 	}
-	// }
