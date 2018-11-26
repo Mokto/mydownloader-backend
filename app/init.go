@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"golang.org/x/net/websocket"
 	"fmt"
+	"localserver/app/models"
 	"localserver/app/services/websockets"
 	"localserver/app/utils/links"
 	"localserver/app/utils/debrid"
@@ -104,7 +105,7 @@ func WatchAllDebrid() {
 		for {
 			links := links.GetAll()
 			for _, link := range links {
-				if (link.AllDebridID != 0 && (link.TorrentDownloading || link.TorrentUploading)) {
+				if (link.AllDebridID != 0 && (link.TorrentState != models.TORRENT_DONE)) {
 					var debridInstance debrid.Debrid
 					debridInstance = &debrid.AllDebrid{}
 					fmt.Println("Updating statuses")

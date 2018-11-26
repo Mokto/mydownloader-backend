@@ -45,15 +45,13 @@ func (c Download) Download() revel.Result {
 	link := models.Link{
 		ID:          		uuid.Must(uuid.NewV4()).String(),
 		AllDebridID:		allDebridID,
-		Url:				url,
+		TorrentUrl:			url,
 		Name:				name,
 		Type:				contentType,
 		Season:				season,
 		Episode:			episode,
-		TorrentDownloading: true,
-		TorrentUploading: 	false,
-		LinkDownloading:	false,
-		Percentage:			0,
+		TorrentState: 		models.TORRENT_QUEUING,
+		DownloadState: 		models.DOWNLOAD_NOT_READY,
 	}
 
 	links.Add(link)

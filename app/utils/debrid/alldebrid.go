@@ -15,7 +15,6 @@ import (
 	 "fmt"
 	"gopkg.in/headzoo/surf.v1"
 	"gopkg.in/headzoo/surf.v1/agent"
-	"io/ioutil"
 )
 
 var allDebridTokenKey = "alldebrid_token"
@@ -97,8 +96,6 @@ func webLogin(username, password string) {
 	url, _ := url.Parse("https://alldebrid.com")
 	for _, cookie := range bow.CookieJar().Cookies(url) {
 		if (cookie.Name == "uid") {
-			fmt.Println(allDebridUidKey)
-			fmt.Println(cookie.Value)
 			go cache.Set(allDebridUidKey, cookie.Value, 0)
 		}
 		
@@ -124,9 +121,7 @@ func (d *AllDebrid) Logout() {
 func (d *AllDebrid) AddTorrent(filename string, magnet string) (error, int) {
 
 	previousTorrents := getTorrents()
-	resp, err := http.PostForm("https://upload.alldebrid.com/uploadtorrent.php", url.Values{"uid": {getUid()}, "magnet": {magnet}, "splitfile": {"1"}, "quick": {"1"}})
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println(string(bodyBytes))
+	_, err := http.PostForm("https://upload.alldebrid.com/uploadtorrent.php", url.Values{"uid": {getUid()}, "magnet": {magnet}, "splitfile": {"1"}, "quick": {"1"}})
 	if (err != nil) {
 		return err, 0
 	}
@@ -146,7 +141,6 @@ func (d *AllDebrid) AddTorrent(filename string, magnet string) (error, int) {
 	}
 	for _, torrent := range newTorrents {
 		if _, ok := torrentsMap[torrent.ID]; !ok {
-			fmt.Println(torrent)
 			return nil, torrent.ID
 		}
 	}
@@ -160,7 +154,6 @@ func (d *AllDebrid) UpdateStatuses(linksToCheck []models.Link) {
 		linksToCheck = links.GetAll()
 	}
 	torrents := getTorrents()
-	// fmt.Println(torrents)
 	for  _, torrent := range torrents {
 		for  i, link := range linksToCheck {
 			if (link.AllDebridID == torrent.ID) {
@@ -168,29 +161,34 @@ func (d *AllDebrid) UpdateStatuses(linksToCheck []models.Link) {
 					linksToCheck[i].Name = torrent.Filename
 				}
 				linksToCheck[i].Size = torrent.Size
-				linksToCheck[i].TorrentDownloading = torrent.Size == 0 || torrent.Downloaded != torrent.Size
-				linksToCheck[i].TorrentUploading = !linksToCheck[i].TorrentDownloading && torrent.Uploaded != torrent.Size
 
-				if (linksToCheck[i].TorrentDownloading) {
-					linksToCheck[i].Speed = torrent.DownloadSpeed
-				} else if (linksToCheck[i].TorrentUploading) {
-					linksToCheck[i].Speed = torrent.UploadSpeed
-				}
-
-				if (linksToCheck[i].TorrentDownloading) {
-					if (torrent.Size == 0) {
+				switch torrent.StatusCode {
+					case 0:
+						linksToCheck[i].TorrentState = models.TORRENT_QUEUING
+						linksToCheck[i].Speed = 0
 						linksToCheck[i].Percentage = 0
-					} else {
-						var percentage float32 = float32(torrent.Downloaded) * 100.0 / float32(torrent.Size);
-						fmt.Println(percentage)
-						linksToCheck[i].Percentage = float32(torrent.Downloaded) * 100.0 / float32(torrent.Size)
-					}
-					
+					case 1:
+						linksToCheck[i].TorrentState = models.TORRENT_DOWNLOADING
+						linksToCheck[i].Speed = torrent.DownloadSpeed
+						if (torrent.Size == 0) {
+							linksToCheck[i].Percentage = 0
+						} else {
+							linksToCheck[i].Percentage = float32(torrent.Downloaded) * 100.0 / float32(torrent.Size)
+						}
+						
+					case 2:
+						linksToCheck[i].TorrentState = models.TORRENT_DOWNLOADING
+						linksToCheck[i].Speed = 0
+						linksToCheck[i].Percentage = 100
+					case 3:
+						linksToCheck[i].TorrentState = models.TORRENT_UPLOADING
+						linksToCheck[i].Speed = torrent.UploadSpeed
+						linksToCheck[i].Percentage = float32(torrent.Uploaded) * 100.0 / float32(torrent.Size)
+					case 4:
+						linksToCheck[i].TorrentState = models.TORRENT_DONE
+						linksToCheck[i].Speed = 0
+						linksToCheck[i].Percentage = 100
 				}
-				if (linksToCheck[i].TorrentUploading) {
-					linksToCheck[i].Percentage = float32(torrent.Uploaded) * 100.0 / float32(torrent.Size)
-				}
-				fmt.Println(torrent.Uploaded, torrent.Size, linksToCheck[i].Name, linksToCheck[i].TorrentDownloading, linksToCheck[i].TorrentUploading, linksToCheck[i].Percentage )
 			}
 		}
 	}
