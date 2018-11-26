@@ -19,7 +19,6 @@ func Get(key string) *redis.StringCmd {
 
 // Set a cache value
 func Set(key string, value interface{}, expiration time.Duration) *redis.StatusCmd {
-	client.Set("test", "qdqwdqwd", 0)
 	return client.Set(key, value, expiration)
 }
 

@@ -107,10 +107,8 @@ func WatchAllDebrid() {
 			links := links.GetAll()
 			for _, link := range links {
 				if (link.AllDebridID != 0 && (link.TorrentState != models.TORRENT_DONE)) {
-					var debridInstance debrid.Debrid
-					debridInstance = &debrid.AllDebrid{}
 					fmt.Println("Updating statuses")
-					debridInstance.UpdateStatuses(links)
+					debrid.UpdateStatuses(links)
 					break
 				}
 			}
@@ -130,9 +128,7 @@ func CheckLinksToDebrid() {
 					links.Save(linksToDebrid)
 					for  j, textLink := range link.Links {
 						fmt.Println(textLink)
-						var debridInstance debrid.Debrid
-						debridInstance = &debrid.AllDebrid{}
-						linkDownloadable := debridInstance.GetDownloadableLink(textLink)
+						linkDownloadable := debrid.GetDownloadableLink(textLink)
 						
 						linksToDebrid[i].Links[j] = linkDownloadable
 					}
@@ -141,7 +137,7 @@ func CheckLinksToDebrid() {
 			}
 			links.Save(linksToDebrid)
 			links.ListAndSend()
-			time.Sleep(10 * time.Second);
+			time.Sleep(time.Second);
 		}
 	}()
 }

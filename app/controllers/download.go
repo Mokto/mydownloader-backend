@@ -32,10 +32,7 @@ func (c Download) Download() revel.Result {
 		return c.RenderText("INVALID_PARAMS")
 	}
 
-	var debridInstance debrid.Debrid
-	debridInstance = &debrid.AllDebrid{}
-
-	err, allDebridID := debridInstance.AddTorrent("", url)
+	err, allDebridID := debrid.AddTorrent("", url)
 	if (err != nil) {
 		fmt.Println(err)
 		c.Response.Status = 500

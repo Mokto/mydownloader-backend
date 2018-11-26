@@ -4,8 +4,8 @@ services:
     image: redis
     ports:
      - "6379:6379"
-  jdownloader:
-    image: plusminus/jdownloader2-headless
-    volumes:
-      - ./temp/config:/opt/JDownloader/cfg
-      - ./temp/dl:/downloads
+  # jdownloader:
+  #   build: jdownloader
+  #   volumes:
+  #     # - ./temp/config:/opt/JDownloader/cfg
+  #     - ./temp/dl:/downloads

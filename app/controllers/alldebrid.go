@@ -27,10 +27,7 @@ func (c AllDebrid) Login() revel.Result {
 		return c.RenderText("INVALID_PARAMS")
 	}
 
-	var debridInstance debrid.Debrid
-	debridInstance = &debrid.AllDebrid{}
-
-	err := debridInstance.Login(username, password)
+	err := debrid.Login(username, password)
 	if err != nil {
 		fmt.Printf("All debrid HTTP error: %s\n", err)
 		c.Response.Status = 403
@@ -42,10 +39,7 @@ func (c AllDebrid) Login() revel.Result {
 
 // Logout from AllDebrid
 func (c AllDebrid) Logout() revel.Result {
-	var debridInstance debrid.Debrid
-	debridInstance = &debrid.AllDebrid{}
-
-	go debridInstance.Logout()
+	go debrid.Logout()
 
 	return c.RenderJSON(nil)
 }

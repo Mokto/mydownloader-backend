@@ -18,11 +18,8 @@ type providersStatus struct {
 // Status returns provider status
 func (c Providers) Status() revel.Result {
 
-	var debridInstance debrid.Debrid
-	debridInstance = &debrid.AllDebrid{}
-
 	data := make(map[string]bool)
-	data["allDebrid"] = debridInstance.IsLoggedIn()
+	data["allDebrid"] = debrid.IsLoggedIn()
 
 	return c.RenderJSON(data)
 }
