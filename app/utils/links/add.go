@@ -8,15 +8,12 @@ import (
 )
 
 func Add(link models.Link) error {
-
-	var links = []models.Link{}
-
-	cacheData, _ := cache.Get(cacheKey).Result()
-	if (cacheData != "") {
-		json.Unmarshal([]byte(cacheData), &links) 
-	}
+	var links = GetAll()
 	links = append(links, link)
-	
+	return Save(links)
+}
+
+func Save(links []models.Link) error {
 	cacheBytes, err := json.Marshal(links)
 	if (err != nil) {
 		return err

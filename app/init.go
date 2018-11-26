@@ -8,7 +8,9 @@ import (
 	"fmt"
 	"localserver/app/services/websockets"
 	"localserver/app/utils/links"
-	"math/rand"
+	"localserver/app/utils/debrid"
+	"github.com/satori/go.uuid"
+	"time"
 )
 
 var (
@@ -42,6 +44,7 @@ func init() {
 	// ( order dependent )
 	// revel.OnAppStart(ExampleStartupScript)
 	// revel.OnAppStart(InitDB)
+	revel.OnAppStart(WatchAllDebrid)
 	revel.OnAppStart(StartWebsockets)
 }
 
@@ -75,7 +78,7 @@ func StartWebsockets() {
 		defer ws.Close()
 		fmt.Println("Client Connected")
 
-		connId := rand.Intn(9999999999999999)
+		connId := uuid.Must(uuid.NewV4()).String()
 	
 		websockets.AddConnection(ws, connId)
 		go links.ListAndSend()
@@ -93,5 +96,24 @@ func StartWebsockets() {
 
 	fmt.Println("Websocket server is listening to : 9001")
 	go http.ListenAndServe(":9001", nil)
+}
+
+
+func WatchAllDebrid() {
+	go func() {
+		for {
+			links := links.GetAll()
+			for _, link := range links {
+				if (link.AllDebridID != 0 && (link.TorrentDownloading || link.TorrentUploading)) {
+					var debridInstance debrid.Debrid
+					debridInstance = &debrid.AllDebrid{}
+					fmt.Println("Updating statuses")
+					debridInstance.UpdateStatuses(links)
+					break
+				}
+			}
+			time.Sleep(time.Second);
+		}
+	}()
 }
 

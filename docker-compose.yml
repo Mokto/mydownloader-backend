@@ -5,7 +5,7 @@ services:
     ports:
      - "6379:6379"
   jdownloader:
-    build: plusminus/jdownloader2-headless
+    image: plusminus/jdownloader2-headless
     volumes:
       - ./temp/config:/opt/JDownloader/cfg
       - ./temp/dl:/downloads

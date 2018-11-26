@@ -1,13 +1,15 @@
 package models
 
 type Link struct {
-	ID     	    		int `json:"id"`
+	ID     	    		string `json:"id"`
+	AllDebridID 		int `json:"allDebridId"`
 	Url		    		string `json:"url"`
 	Name				string `json:"name"`
 	Type				string `json:"type"`
 	Season				string `json:"season"`
 	Episode				string `json:"episode"`
-	TorrentDebriding	bool `json:"torrentDebriding"`
+	TorrentDownloading	bool `json:"torrentDownloading"`
+	TorrentUploading	bool `json:"torrentUploading"`
 	LinkDownloading		bool `json:"linkDownloading"`
 	Percentage			float32 `json:"percentage"`
 	Size				int `json:"size"`

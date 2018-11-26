@@ -8,13 +8,13 @@ import (
 	"golang.org/x/net/websocket"
 )
 
-var connections = make(map[int]*websocket.Conn);
+var connections = make(map[string]*websocket.Conn);
 
-func AddConnection(ws *websocket.Conn, connId int) {
+func AddConnection(ws *websocket.Conn, connId string) {
 	connections[connId] = ws
 }
 
-func RemoveConnection(connId int) {
+func RemoveConnection(connId string) {
 	delete(connections, connId)
 }
 

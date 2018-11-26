@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"math/rand"
 	"localserver/app/models"
 	"fmt"
 	"localserver/app/utils/debrid"
 	"localserver/app/utils/links"
 
 	"github.com/revel/revel"
+	"github.com/satori/go.uuid"
 )
 
 // Download Controller
@@ -35,20 +35,23 @@ func (c Download) Download() revel.Result {
 	var debridInstance debrid.Debrid
 	debridInstance = &debrid.AllDebrid{}
 
-	err := debridInstance.AddTorrent("", url)
+	err, allDebridID := debridInstance.AddTorrent("", url)
 	if (err != nil) {
 		fmt.Println(err)
 		c.Response.Status = 500
+		return c.RenderText(err.Error())
 	}
 
 	link := models.Link{
-		ID:          		rand.Intn(9999999999999999),
+		ID:          		uuid.Must(uuid.NewV4()).String(),
+		AllDebridID:		allDebridID,
 		Url:				url,
 		Name:				name,
 		Type:				contentType,
 		Season:				season,
 		Episode:			episode,
-		TorrentDebriding:   true,
+		TorrentDownloading: true,
+		TorrentUploading: 	false,
 		LinkDownloading:	false,
 		Percentage:			0,
 	}
