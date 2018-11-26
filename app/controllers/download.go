@@ -15,6 +15,12 @@ type Download struct {
 	*revel.Controller
 }
 
+
+// Login to Download Provider
+func (c Download) GetDownloads() revel.Result {
+	return c.RenderJSON(downloads.GetAll())
+}
+
 // Login to Download Provider
 func (c Download) Download() revel.Result {
 

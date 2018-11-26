@@ -18,7 +18,9 @@ OPTIONS /alldebrid/logout                        Options.Get
 POST    /alldebrid/logout                        Alldebrid.Logout
 
 
-OPTIONS /download                               Options.Get
-POST    /download                               Download.Download
+OPTIONS   /download                             Options.Get
+POST      /download                             Download.Download
+OPTIONS   /download                             Options.Get
+GET       /download                             Download.GetDownloads
 OPTIONS   /download/:id                         Options.Get
 DELETE    /download/:id                         Download.DeleteDownload
