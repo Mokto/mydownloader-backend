@@ -1,7 +1,7 @@
 package alldebrid
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 	"time"
 	"net/url"
@@ -15,10 +15,7 @@ import (
 func RemoveTorrent(allDebridID int) (error) {
 	var httpUrl strings.Builder
 	httpUrl.WriteString("https://alldebrid.com//torrent/?action=remove&id=")
-	httpUrl.WriteString(string(allDebridID))
-
-	fmt.Println(httpUrl.String())
-	fmt.Println(allDebridID)
+	httpUrl.WriteString(strconv.Itoa(allDebridID))
 
 	bow := surf.NewBrowser()
 	bow.SetUserAgent(agent.Chrome())

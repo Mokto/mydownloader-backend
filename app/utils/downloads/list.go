@@ -1,7 +1,6 @@
 package downloads
 
 import (
-	// "fmt"
 	"encoding/json"
 	"localserver/app/services/cache"
 	"localserver/app/models"
@@ -39,7 +38,7 @@ func GetAll() (downloads []models.Download) {
 func Get(id string) (download models.Download) {
 
 	cacheData, err := cache.HGet(cacheKey, id)
-	if (cacheData == "" || err == nil) {
+	if (cacheData == "" || err != nil) {
 		return;
 	}
 	json.Unmarshal([]byte(cacheData), &download) 

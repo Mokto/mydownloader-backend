@@ -69,10 +69,10 @@ func (c Download) Download() revel.Result {
 // Login to Download Provider
 func (c Download) DeleteDownload(id string) revel.Result {
 	
-	downloads.Remove(id)
 	download := downloads.Get(id)
 	alldebrid.RemoveTorrent(download.AllDebridID)
 
+	downloads.Remove(id)
 	go downloads.ListAndSend()
 	
 	return c.RenderJSON(nil)
