@@ -16,11 +16,12 @@ func CheckLinksToDebrid() {
 					downloadsToCheck[i].DownloadState = models.DOWNLOAD_DEBRIDING
 					downloads.Save(downloadsToCheck)
 					for  j, textdownload := range download.Links {
-						downloadLink := debrid.GetDownloadableLink(textdownload)
+						downloadLink := debrid.GetDownloadableLink(textdownload.Url)
 						
-						downloadsToCheck[i].Links[j] = downloadLink
+						downloadsToCheck[i].Links[j].Url = downloadLink
+						downloadsToCheck[i].Links[j].State = models.LINK_QUEUING
 					}
-					downloadsToCheck[i].DownloadState = models.DOWNLOAD_DOWNLOADING
+					downloadsToCheck[i].DownloadState = models.DOWNLOAD_QUEUING
 				}
 			}
 			downloads.Save(downloadsToCheck)

@@ -44,10 +44,12 @@ func UpdateStatuses(downloadsToCheck []models.Download) {
 						downloadsToCheck[i].Percentage = float32(torrent.Uploaded) * 100.0 / float32(torrent.Size)
 					case 4:
 						downloadsToCheck[i].TorrentState = models.TORRENT_DONE
-						// downloadsToCheck[i].DownloadState = models.DOWNLOAD_NOT_DEBRIDED
+						downloadsToCheck[i].DownloadState = models.DOWNLOAD_NOT_READY
 						downloadsToCheck[i].Speed = 0
 						downloadsToCheck[i].Percentage = 100
-						downloadsToCheck[i].Links = torrent.Links
+						downloadsToCheck[i].Links = models.GetLinksFromString(torrent.Links, false)
+
+						
 				}
 			}
 		}

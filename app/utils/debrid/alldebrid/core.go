@@ -11,6 +11,7 @@ type allDebridTorrentsGetResponse struct {
 	Success    bool          			 `json:"success"`
 	Torrents   []allDebridTorrent    `json:"torrents"`
 }
+
 type allDebridTorrent struct {
 	ID   		int    	`json:"id"`
 	Filename    string   	`json:"filename"`
@@ -23,6 +24,7 @@ type allDebridTorrent struct {
 	UploadDate 	int			`json:"uploadDate"`
 	Links		[]string    `json:"link"`
 }
+
 func getTorrents() []allDebridTorrent {
 	var url strings.Builder
 	url.WriteString("https://api.alldebrid.com/user/torrents?agent=mySoft&token=")

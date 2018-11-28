@@ -4,6 +4,7 @@ import (
 	"localserver/app/models"
 	"fmt"
 	"localserver/app/utils/debrid"
+	"localserver/app/utils/debrid/alldebrid"
 	"localserver/app/utils/downloads"
 
 	"github.com/revel/revel"
@@ -66,8 +67,9 @@ func (c Download) Download() revel.Result {
 
 // Login to Download Provider
 func (c Download) DeleteDownload(id string) revel.Result {
-
+	
 	downloads.Remove(id)
+	alldebrid.RemoveTorrent("37855532")
 	// TODO SHOULD REMOVE ALLDEBRID TOO
 
 	go downloads.ListAndSend()

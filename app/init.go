@@ -37,6 +37,7 @@ func init() {
 	revel.OnAppStart(runners.WatchAllDebrid)
 	revel.OnAppStart(runners.StartWebsockets)
 	revel.OnAppStart(runners.CheckLinksToDebrid)
+	revel.OnAppStart(runners.Download)
 }
 
 // HeaderFilter adds common security headers
