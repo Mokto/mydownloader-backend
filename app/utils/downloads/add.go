@@ -8,18 +8,23 @@ import (
 )
 
 func Add(download models.Download) error {
-	var downloads = GetAll()
-	downloads = append(downloads, download)
-	return Save(downloads)
-}
 
-func Save(downloads []models.Download) error {
-	cacheBytes, err := json.Marshal(downloads)
+	cacheData, err := json.Marshal(download)
 	if (err != nil) {
 		return err
-	} 
-	cache.Set(cacheKey, cacheBytes, 0)
-
-	return nil
+	}
+	return cache.HSet(cacheKey, download.ID, cacheData)
 }
+
+// func Save(downloads []models.Download) error {
+// 	for _, download := range downloads {
+// 		cacheData, err := json.Marshal(download)
+// 		if (err != nil) {
+// 			return err
+// 		}
+// 		cache.HSet(cacheKey, download.ID, cacheData)
+// 	}
+
+// 	return nil
+// }
 

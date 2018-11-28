@@ -1,6 +1,7 @@
 package downloadmanager
 
 import (
+	"localserver/app/utils/downloads"
 	"time"
 	"fmt"
 	"github.com/cavaliercoder/grab"
@@ -11,6 +12,9 @@ import (
 
 func Download(download models.Download) {
 
+	download.DownloadState = models.DOWNLOAD_DOWNLOADING
+	download.Percentage = 0
+	downloads.Save(download)
 
 	client := grab.NewClient()
 	req, _ := grab.NewRequest(".", "http://www.golang-book.com/public/pdf/gobook.pdf")

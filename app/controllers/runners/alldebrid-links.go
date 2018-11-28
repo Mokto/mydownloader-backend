@@ -11,21 +11,25 @@ func CheckLinksToDebrid() {
 	go func() {
 		for {
 			downloadsToCheck := downloads.GetAll()
-			for  i, download := range downloadsToCheck {
+			hasChanged := false
+			for  _, download := range downloadsToCheck {
 				if download.DownloadState == models.DOWNLOAD_NOT_READY && download.TorrentState == models.TORRENT_DONE {
-					downloadsToCheck[i].DownloadState = models.DOWNLOAD_DEBRIDING
-					downloads.Save(downloadsToCheck)
+					download.DownloadState = models.DOWNLOAD_DEBRIDING
+					downloads.Save(download)
 					for  j, textdownload := range download.Links {
 						downloadLink := debrid.GetDownloadableLink(textdownload.Url)
 						
-						downloadsToCheck[i].Links[j].Url = downloadLink
-						downloadsToCheck[i].Links[j].State = models.LINK_QUEUING
+						download.Links[j].Url = downloadLink
+						download.Links[j].State = models.LINK_QUEUING
 					}
-					downloadsToCheck[i].DownloadState = models.DOWNLOAD_QUEUING
+					download.DownloadState = models.DOWNLOAD_QUEUING
+					downloads.Save(download)
+					hasChanged = true
 				}
 			}
-			downloads.Save(downloadsToCheck)
-			downloads.ListAndSend()
+			if hasChanged == true {
+				downloads.ListAndSend()
+			}
 			time.Sleep(time.Second);
 		}
 	}()

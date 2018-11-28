@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"time"
 	"localserver/app/models"
 	"fmt"
 	"localserver/app/utils/debrid"
@@ -48,6 +49,7 @@ func (c Download) Download() revel.Result {
 
 	download := models.Download{
 		ID:          		uuid.Must(uuid.NewV4()).String(),
+		AddedDate:			time.Now(),
 		AllDebridID:		allDebridID,
 		TorrentUrl:			url,
 		Name:				name,
@@ -57,7 +59,6 @@ func (c Download) Download() revel.Result {
 		TorrentState: 		models.TORRENT_QUEUING,
 		DownloadState: 		models.DOWNLOAD_NOT_READY,
 	}
-
 	downloads.Add(download)
 
 	go downloads.ListAndSend()
@@ -69,8 +70,8 @@ func (c Download) Download() revel.Result {
 func (c Download) DeleteDownload(id string) revel.Result {
 	
 	downloads.Remove(id)
-	alldebrid.RemoveTorrent("37855532")
-	// TODO SHOULD REMOVE ALLDEBRID TOO
+	download := downloads.Get(id)
+	alldebrid.RemoveTorrent(download.AllDebridID)
 
 	go downloads.ListAndSend()
 	

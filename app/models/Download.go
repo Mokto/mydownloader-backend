@@ -1,7 +1,13 @@
 package models
 
+import (
+	"time"
+)
+
+
 type Download struct {
 	ID     	    		string `json:"id"`
+	AddedDate			time.Time `json:"addedDate"`
 
 	AllDebridID 		int `json:"allDebridId"`
 	TorrentUrl		    string `json:"torrentUrl"`

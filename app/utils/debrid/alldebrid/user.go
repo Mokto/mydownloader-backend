@@ -113,10 +113,12 @@ func Logout() {
 }
 
 func getToken() string {
-	return cache.Get(allDebridTokenKey).Val()
+	res, _ := cache.Get(allDebridTokenKey)
+	return res
 }
 func getUid() string {
-	return cache.Get(allDebridUidKey).Val()
+	res, _ := cache.Get(allDebridUidKey)
+	return res
 }
 
 
